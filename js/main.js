@@ -85,5 +85,13 @@ document.querySelectorAll('.game-card').forEach(card => {
     });
 });
 // Initial
+const featuredItems = document.querySelectorAll('.featured-item');
+let featuredIndex = 0;
+
+setInterval(() => {
+  featuredItems[featuredIndex].classList.remove('active');
+  featuredIndex = (featuredIndex + 1) % featuredItems.length;
+  featuredItems[featuredIndex].classList.add('active');
+}, 5000);
 
 renderGames();

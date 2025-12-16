@@ -241,3 +241,27 @@ body {
     color: #ff00ff;
     text-shadow: 0 0 8px #ff00ff;
 }
+.featured {
+  position: relative;
+  overflow: hidden;
+}
+
+.featured-item {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.featured-item.active {
+  opacity: 1;
+  transform: translateX(0);
+  z-index: 1;
+}
+
+.featured-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
