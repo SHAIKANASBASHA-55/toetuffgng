@@ -3,14 +3,23 @@ import { games } from './data/games.js';
 const grid = document.getElementById('gamesGrid');
 const categoryFilters = document.getElementById('categoryFilters');
 const sectionTitle = document.getElementById('sectionTitle');
+
 let currentFilter = 'all';
 
+/* =====================
+   RENDER GAMES
+===================== */
 function renderGames(filter = 'all') {
     grid.innerHTML = '';
-    const filtered = filter === 'all' ? games : games.filter(g => g.category === filter);
+
+    const filtered =
+        filter === 'all'
+            ? games
+            : games.filter(g => g.category === filter);
 
     if (filtered.length === 0) {
-        grid.innerHTML = '<p style="text-align:center; font-size:28px; color:#dc2626;">No games in this category yet!</p>';
+        grid.innerHTML =
+            '<p style="text-align:center;font-size:28px;color:#dc2626;">No games in this category yet!</p>';
         return;
     }
 
@@ -24,87 +33,87 @@ function renderGames(filter = 'all') {
                 <p>${game.category.toUpperCase()}</p>
             </div>
         `;
-        card.onclick = () => window.location.href = `game.html?id=${game.id}`;
+        card.addEventListener('click', () => {
+            window.location.href = `game.html?id=${game.id}`;
+        });
         grid.appendChild(card);
     });
 }
 
-// Category buttons
+/* =====================
+   CATEGORY FILTERS
+===================== */
 document.querySelectorAll('.cat-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelector('.cat-btn.active').classList.remove('active');
+        document.querySelector('.cat-btn.active')?.classList.remove('active');
         btn.classList.add('active');
+
         currentFilter = btn.dataset.cat;
         renderGames(currentFilter);
-        sectionTitle.textContent = currentFilter === 'all' ? 'All Games' : currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1) + ' Games';
+
+        sectionTitle.textContent =
+            currentFilter === 'all'
+                ? 'All Games'
+                : currentFilter.charAt(0).toUpperCase() +
+                  currentFilter.slice(1) +
+                  ' Games';
     });
 });
 
-// Sidebar
-document.querySelectorAll('.sidebar li').forEach(item => {
-    item.addEventListener('click', () => {
-        document.querySelector('.sidebar li.active')?.classList.remove('active');
-        item.classList.add('active');
-
-        const text = item.textContent.trim().toLowerCase();
-        if (text === 'home' || text === 'library' || text === 'downloads') {
-            categoryFilters.style.display = 'none';
-            sectionTitle.textContent = 'All Games';
-            renderGames('all');
-        } else if (text === 'category') {
-            categoryFilters.style.display = 'flex';
-            sectionTitle.textContent = 'Categories';
-            renderGames(currentFilter);
-        }
-    });
-});
-
-// Search
-document.querySelector('.search-bar input').addEventListener('input', (e) => {
+/* =====================
+   SEARCH
+===================== */
+document.querySelector('.search-bar input').addEventListener('input', e => {
     const query = e.target.value.toLowerCase();
     categoryFilters.style.display = 'none';
     sectionTitle.textContent = query ? 'Search Results' : 'All Games';
+
     grid.innerHTML = '';
-    const results = games.filter(g => g.title.toLowerCase().includes(query));
-    if (results.length === 0) grid.innerHTML = '<p style="text-align:center; font-size:28px; color:#dc2626;">No games found!</p>';
+
+    const results = games.filter(g =>
+        g.title.toLowerCase().includes(query)
+    );
+
+    if (results.length === 0) {
+        grid.innerHTML =
+            '<p style="text-align:center;font-size:28px;color:#dc2626;">No games found!</p>';
+        return;
+    }
+
     results.forEach(game => {
         const card = document.createElement('div');
         card.className = 'game-card';
-        card.innerHTML = `<img src="${game.thumbnail}"><div class="info"><h3>${game.title}</h3><p>${game.category.toUpperCase()}</p></div>`;
-        card.onclick = () => window.location.href = `game.html?id=${game.id}`;
+        card.innerHTML = `
+            <img src="${game.thumbnail}">
+            <div class="info">
+                <h3>${game.title}</h3>
+                <p>${game.category.toUpperCase()}</p>
+            </div>
+        `;
+        card.addEventListener('click', () => {
+            window.location.href = `game.html?id=${game.id}`;
+        });
         grid.appendChild(card);
     });
 });
-// Add this at the end of main.js
-document.querySelectorAll('.game-card').forEach(card => {
-    card.addEventListener('click', () => {
-        document.getElementById('particles-bg').style.transform = 'scale(1.1)';
-        setTimeout(() => {
-            document.getElementById('particles-bg').style.transform = 'scale(1)';
-        }, 300);
-    });
-});
-// Initial
-<script>
+
+/* =====================
+   FEATURED SLIDER (NETFLIX STYLE)
+===================== */
 let currentSlide = 0;
 const slides = document.querySelectorAll('.featured-slide');
-const slider = document.getElementById('featuredSlider');
 
-function showSlide(index) {
-    currentSlide = (index + slides.length) % slides.length;
-    slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+function rotateFeatured() {
+    if (slides.length === 0) return;
+
+    slides[currentSlide].classList.remove('active');
+    currentSlide = (currentSlide + 1) % slides.length;
+    slides[currentSlide].classList.add('active');
 }
 
-function nextSlide() {
-    showSlide(currentSlide + 1);
-}
+setInterval(rotateFeatured, 5000);
 
-function prevSlide() {
-    showSlide(currentSlide - 1);
-}
-
-// Auto-slide like Netflix
-setInterval(nextSlide, 5000);
-</script>
-
+/* =====================
+   INIT
+===================== */
 renderGames();
