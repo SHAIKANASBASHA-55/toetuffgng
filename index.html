@@ -4,9 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>toetuffgng</title>
+
+    <!-- ✅ FAVICON (CORRECT PLACE) -->
+    <link rel="icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
+
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <!-- Futuristic Robotic Background -->
     <div id="particles-bg">
@@ -16,12 +23,7 @@
     <div class="page-container">
         <!-- Header Logo + Search -->
         <header class="header">
-            <link rel="icon" href="favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
-
             <div class="logo">
-                <!-- Clean futuristic neon logo -->
                 <img src="https://png.pngtree.com/thumb_back/fh260/background/20240521/pngtree-futuristic-border-blue-neon-image_15804970.jpg" alt="toetuffgng Logo">
                 <h1>toetuffgng</h1>
             </div>
@@ -52,19 +54,18 @@
         <section class="games-section">
             <h2 id="sectionTitle">All Games</h2>
             <div class="games-grid" id="gamesGrid">
-                <!-- Example static cards (you can replace with JS later) -->
                 <div class="game-card">
-                    <img src="https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg" alt="Neon Racer">
+                    <img src="https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg">
                     <h3>Neon Racer</h3>
                     <p>Drift through cyber streets at light speed.</p>
                 </div>
                 <div class="game-card">
-                    <img src="https://images.pexels.com/photos/3165330/pexels-photo-3165330.jpeg" alt="Quantum Puzzle">
+                    <img src="https://images.pexels.com/photos/3165330/pexels-photo-3165330.jpeg">
                     <h3>Quantum Puzzle</h3>
                     <p>Hack the grid with your logic and timing.</p>
                 </div>
                 <div class="game-card">
-                    <img src="https://images.pexels.com/photos/907173/pexels-photo-907173.jpeg" alt="Arcade Bots">
+                    <img src="https://images.pexels.com/photos/907173/pexels-photo-907173.jpeg">
                     <h3>Arcade Bots</h3>
                     <p>Fight waves of rogue mechs in neon arenas.</p>
                 </div>
@@ -72,9 +73,8 @@
         </section>
     </div>
 
-    <!-- Your main game JS if needed -->
     <script type="module" src="js/main.js"></script>
-    <!-- Robotic background script -->
+
     <script>
         const canvas = document.getElementById('robotBg');
         const ctx = canvas.getContext('2d');
@@ -90,9 +90,7 @@
 
         function createScene() {
             particles = [];
-            const count = 70;
-
-            for (let i = 0; i < count; i++) {
+            for (let i = 0; i < 70; i++) {
                 particles.push({
                     x: Math.random() * width,
                     y: Math.random() * height,
@@ -107,65 +105,19 @@
 
         function draw() {
             ctx.clearRect(0, 0, width, height);
-
-            // subtle dark overlay
             ctx.fillStyle = 'rgba(3, 0, 20, 0.9)';
             ctx.fillRect(0, 0, width, height);
 
-            // robotic grid
-            ctx.strokeStyle = 'rgba(0, 255, 255, 0.08)';
-            ctx.lineWidth = 1;
-            const step = 80;
-            ctx.beginPath();
-            for (let x = 0; x < width; x += step) {
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, height);
-            }
-            for (let y = 0; y < height; y += step) {
-                ctx.moveTo(0, y);
-                ctx.lineTo(width, y);
-            }
-            ctx.stroke();
-
-            // particles
             particles.forEach(p => {
                 p.x += p.vx;
                 p.y += p.vy;
-
                 if (p.x < 0 || p.x > width) p.vx *= -1;
                 if (p.y < 0 || p.y > height) p.vy *= -1;
 
-                const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 4);
-                gradient.addColorStop(0, p.glow);
-                gradient.addColorStop(1, 'rgba(0,0,0,0)');
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size * 4, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = '#0ff';
+                ctx.fillStyle = p.glow;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                 ctx.fill();
-            });
-
-            // connections like circuits
-            ctx.lineWidth = 1.2;
-            particles.forEach((a, i) => {
-                for (let j = i + 1; j < particles.length; j++) {
-                    const b = particles[j];
-                    const dx = a.x - b.x;
-                    const dy = a.y - b.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 140) {
-                        const alpha = 1 - dist / 140;
-                        ctx.strokeStyle = `rgba(0, 255, 255, ${alpha * 0.6})`;
-                        ctx.beginPath();
-                        ctx.moveTo(a.x, a.y);
-                        ctx.lineTo(b.x, b.y);
-                        ctx.stroke();
-                    }
-                }
             });
 
             requestAnimationFrame(draw);
