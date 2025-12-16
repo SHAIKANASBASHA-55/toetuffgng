@@ -85,4 +85,26 @@ document.querySelectorAll('.game-card').forEach(card => {
     });
 });
 // Initial
+<script>
+let currentSlide = 0;
+const slides = document.querySelectorAll('.featured-slide');
+const slider = document.getElementById('featuredSlider');
+
+function showSlide(index) {
+    currentSlide = (index + slides.length) % slides.length;
+    slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+}
+
+function nextSlide() {
+    showSlide(currentSlide + 1);
+}
+
+function prevSlide() {
+    showSlide(currentSlide - 1);
+}
+
+// Auto-slide like Netflix
+setInterval(nextSlide, 5000);
+</script>
+
 renderGames();
