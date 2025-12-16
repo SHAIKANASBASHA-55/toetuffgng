@@ -16,7 +16,7 @@ export const games = [
     {
         id: 'clumsy-bird',
         title: 'Clumsy Bird',
-        thumbnail: 'https://i.ytimg.com/vi/4K9AG_0qrLs/maxresdefault.jpg',
+        thumbnail: 'https://upload.wikimedia.org/wikipedia/en/0/0a/Flappy_Bird_icon.png',
         url: 'https://clumsy-bird-master-zeta.vercel.app/',
         category: 'arcade'
     },
