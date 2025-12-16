@@ -1,0 +1,8 @@
+// js/ui/loader.js: Loader animations
+export function showLoader() {
+    document.getElementById('loader').style.display = 'block';
+}
+
+export function hideLoader() {
+    document.getElementById('loader').style.display = 'none';
+}

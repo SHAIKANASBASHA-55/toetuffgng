@@ -1,0 +1,32 @@
+/* css/layout.css: Navbar, grid, footer */
+.navbar {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.logo {
+    height: 40px;
+    margin-right: 1rem;
+}
+
+#searchInput, #categoryFilter {
+    margin-left: auto;
+    padding: 0.5rem;
+}
+
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+footer {
+    text-align: center;
+    padding: 1rem;
+    background-color: var(--primary-color);
+    color: #fff;
+}
