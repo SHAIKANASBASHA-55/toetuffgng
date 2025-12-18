@@ -265,3 +265,27 @@ body {
   height: 100%;
   object-fit: cover;
 }
+.footer {
+  background: #0f0f0f;
+  color: #aaa;
+  padding: 30px 15px;
+  text-align: center;
+  margin-top: 50px;
+  font-family: Arial, sans-serif;
+}
+
+.footer h3 {
+  color: #fff;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+.footer p {
+  margin: 6px 0;
+  font-size: 14px;
+}
+
+.footer .creator {
+  color: #00ffd5;
+  font-size: 15px;
+}
