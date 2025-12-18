@@ -266,11 +266,11 @@ body {
   object-fit: cover;
 }
 .footer {
-  background: #518bd2;
-  color: #aaa;
-  padding: 30px 15px;
+  background: #7c7f7d;
+  color: #f5eeee;
+  padding: 10px 10px;
   text-align: center;
-  margin-top: 40px;
+  margin-top: 25px;
   font-family: Arial, sans-serif;
 }
 
