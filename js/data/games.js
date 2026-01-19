@@ -26,5 +26,12 @@ export const games = [
         thumbnail: 'https://play-lh.googleusercontent.com/V04D0W3wYq4crdfMkWnIm-FEqTHzQllOKaKyEElCEvGqzDJDt1T7leyVq7O-g6i9Gz8=w526-h296-rw',
         url: 'https://2048-master-five.vercel.app/',
         category: 'puzzle'
+    },
+    {
+        id: 'Flappy-Neo',
+        title: 'Flappy Neo',
+        thumbnail: 'https://upload.wikimedia.org/wikipedia/en/0/0a/Flappy_Bird_icon.png',
+        url: 'https://flappyneo.vercel.app/',
+        category: 'arcade'
     }
 ];
