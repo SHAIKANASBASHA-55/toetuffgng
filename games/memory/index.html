@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Memory Match</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f3f4f6;
+            font-family: 'Nunito', sans-serif;
+            flex-direction: column;
+            color: #1e293b;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 90px);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            width: 90px;
+            height: 90px;
+            background: #8b5cf6;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 36px;
+            transition: transform 0.3s, background 0.3s;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            color: transparent;
+        }
+
+        .card.swapped {
+            background: #fff;
+            color: #000;
+            transform: rotateY(180deg);
+        }
+
+        .card.matched {
+            background: #10b981;
+            color: #fff;
+            transform: rotateY(180deg);
+            opacity: 0.8;
+            cursor: default;
+            box-shadow: none;
+        }
+
+        h2 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            color: #4c1d95;
+        }
+
+        button {
+            padding: 12px 30px;
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+    <h2 id="msg">Find the pairs!</h2>
+    <div class="grid" id="grid"></div>
+    <button onclick="init()">Restart Game</button>
+    <script>
+        const items = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼'];
+        let cards = [...items, ...items];
+        let flipped = [];
+        let matched = 0;
+
+        function init() {
+            document.getElementById('msg').innerText = "Find the pairs!";
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            cards.sort(() => Math.random() - 0.5);
+            flipped = [];
+            matched = 0;
+
+            cards.forEach((symbol, i) => {
+                let card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.val = symbol;
+                /* use innerHTML to make it stay but colored transparent initially */
+                card.innerHTML = `<span style="transform: rotateY(180deg)">${symbol}</span>`;
+                card.onclick = () => flipCard(card);
+                grid.appendChild(card);
+            });
+        }
+
+        function flipCard(card) {
+            if (flipped.length >= 2 || card.classList.contains('swapped') || card.classList.contains('matched')) return;
+            card.classList.add('swapped');
+            flipped.push(card);
+
+            if (flipped.length === 2) {
+                setTimeout(checkMatch, 800);
+            }
+        }
+
+        function checkMatch() {
+            if (flipped[0].dataset.val === flipped[1].dataset.val) {
+                flipped[0].classList.replace('swapped', 'matched');
+                flipped[1].classList.replace('swapped', 'matched');
+                matched += 2;
+                if (matched === cards.length) document.getElementById('msg').innerText = "You Won!";
+            } else {
+                flipped[0].classList.remove('swapped');
+                flipped[1].classList.remove('swapped');
+            }
+            flipped = [];
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

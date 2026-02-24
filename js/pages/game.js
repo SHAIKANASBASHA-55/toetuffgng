@@ -1,5 +1,5 @@
 // js/pages/game.js: game.html logic (iframe, fullscreen)
-import { games } from '../data/games.js';
+import { games } from '../data/games.js?v=4';
 
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);

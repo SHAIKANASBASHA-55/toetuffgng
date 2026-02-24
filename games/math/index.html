@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Math Genius</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #ccfbf1;
+            font-family: 'Nunito', sans-serif;
+            color: #134e4a;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(20, 184, 166, 0.2);
+            text-align: center;
+            width: 400px;
+            max-width: 90vw;
+        }
+
+        .score-time {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #0d9488;
+        }
+
+        #question {
+            font-size: 48px;
+            font-weight: 900;
+            margin: 20px 0;
+            color: #115e59;
+            letter-spacing: 2px;
+        }
+
+        input {
+            font-size: 32px;
+            padding: 10px;
+            width: 120px;
+            text-align: center;
+            border: 3px solid #5eead4;
+            border-radius: 8px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            border-color: #14b8a6;
+            box-shadow: 0 0 10px rgba(20, 184, 166, 0.3);
+        }
+
+        button {
+            background: #14b8a6;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(20, 184, 166, 0.4);
+        }
+
+        button:hover {
+            background: #0d9488;
+            transform: translateY(-2px);
+        }
+
+        #message {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+            min-height: 24px;
+        }
+
+        .tools {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="score-time">
+            <span id="scoreText">Score: 0</span>
+            <span id="timeText">Time: 60s</span>
+        </div>
+        <div id="question">Game Over</div>
+        <input type="number" id="answer" autocomplete="off" disabled>
+        <div class="tools">
+            <button id="startBtn" onclick="startGame()">Start Game</button>
+        </div>
+        <div id="message">Press Start to begin!</div>
+    </div>
+
+    <script>
+        let score = 0;
+        let timeLeft = 60;
+        let playing = false;
+        let correctAnswer = 0;
+        let timer;
+
+        const questionEl = document.getElementById('question');
+        const answerEl = document.getElementById('answer');
+        const scoreEl = document.getElementById('scoreText');
+        const timeEl = document.getElementById('timeText');
+        const msgEl = document.getElementById('message');
+        const startBtn = document.getElementById('startBtn');
+
+        function startGame() {
+            score = 0;
+            timeLeft = 60;
+            playing = true;
+            scoreEl.innerText = `Score: ${score}`;
+            timeEl.innerText = `Time: ${timeLeft}s`;
+            startBtn.style.display = 'none';
+            answerEl.disabled = false;
+            answerEl.value = '';
+            answerEl.focus();
+            msgEl.innerText = '';
+            msgEl.style.color = '#134e4a';
+            generateQuestion();
+
+            timer = setInterval(() => {
+                timeLeft--;
+                timeEl.innerText = `Time: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            clearInterval(timer);
+            playing = false;
+            questionEl.innerText = 'Time\'s Up!';
+            answerEl.disabled = true;
+            startBtn.style.display = 'inline-block';
+            startBtn.innerText = 'Play Again';
+            msgEl.innerText = `Final Score: ${score}`;
+            msgEl.style.color = '#e11d48';
+        }
+
+        function generateQuestion() {
+            const ops = ['+', '-', '*'];
+            const op = ops[Math.floor(Math.random() * ops.length)];
+            let n1, n2;
+
+            if (op === '+') {
+                n1 = Math.floor(Math.random() * 50) + 1;
+                n2 = Math.floor(Math.random() * 50) + 1;
+                correctAnswer = n1 + n2;
+            } else if (op === '-') {
+                n1 = Math.floor(Math.random() * 50) + 20;
+                n2 = Math.floor(Math.random() * 20) + 1;
+                correctAnswer = n1 - n2;
+            } else if (op === '*') {
+                n1 = Math.floor(Math.random() * 12) + 2;
+                n2 = Math.floor(Math.random() * 12) + 2;
+                correctAnswer = n1 * n2;
+            }
+
+            questionEl.innerText = `${n1} ${op} ${n2} = ?`;
+        }
+
+        answerEl.addEventListener('keyup', function (e) {
+            if (!playing) return;
+            if (e.key === 'Enter' || answerEl.value.length >= String(correctAnswer).length) {
+                let val = parseInt(answerEl.value);
+                if (val === correctAnswer) {
+                    score++;
+                    scoreEl.innerText = `Score: ${score}`;
+                    msgEl.innerText = 'Correct! +1';
+                    msgEl.style.color = '#10b981';
+                    setTimeout(() => msgEl.innerText = '', 800);
+                    answerEl.value = '';
+                    generateQuestion();
+                } else if (answerEl.value.length >= String(correctAnswer).length && e.key === 'Enter') {
+                    msgEl.innerText = 'Wrong!';
+                    msgEl.style.color = '#f43f5e';
+                    answerEl.value = '';
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

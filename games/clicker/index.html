@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Cookie Clicker</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #e0e5ec;
+            font-family: 'Nunito', sans-serif;
+            color: #1a1a1a;
+            overflow: hidden;
+        }
+
+        .score-board {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .score-board h1 {
+            font-size: 64px;
+            margin: 0;
+            color: #1a1a1a;
+            text-shadow: 2px 2px 4px #fff, -1px -1px 2px #a3b1c6;
+        }
+
+        .cps {
+            font-size: 24px;
+            color: #5a5a5a;
+            font-weight: bold;
+        }
+
+        /* Claymorphism Cookie Button */
+        .cookie-btn {
+            background: none;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            transition: transform 0.05s;
+        }
+
+        .cookie-img {
+            width: 300px;
+            filter: drop-shadow(0 20px 30px rgba(163, 177, 198, 0.6));
+            pointer-events: none;
+        }
+
+        .cookie-btn:active {
+            transform: scale(0.95);
+        }
+
+        .upgrades {
+            display: flex;
+            gap: 20px;
+            margin-top: 50px;
+        }
+
+        /* Claymorphism Upgrades */
+        .upgrade {
+            background: #e0e5ec;
+            border: none;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            width: 160px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow:
+                8px 8px 16px #a3b1c6,
+                -8px -8px 16px #ffffff;
+        }
+
+        .upgrade:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                12px 12px 24px #a3b1c6,
+                -12px -12px 24px #ffffff;
+        }
+
+        .upgrade:active {
+            transform: translateY(2px);
+            box-shadow:
+                inset 5px 5px 10px #a3b1c6,
+                inset -5px -5px 10px #ffffff;
+        }
+
+        .upgrade:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            border: 2px dashed #a3b1c6;
+            background: transparent;
+        }
+
+        .upgrade h3 {
+            margin: 0 0 10px 0;
+            color: #1a1a1a;
+            font-weight: 900;
+        }
+
+        .upgrade p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #5a5a5a;
+            font-weight: bold;
+        }
+
+        .cost {
+            font-weight: 900 !important;
+            color: #ef4444 !important;
+        }
+
+        .floating-text {
+            position: absolute;
+            font-size: 28px;
+            font-weight: 900;
+            color: #1a1a1a;
+            pointer-events: none;
+            animation: floatUp 1s forwards ease-out;
+            text-shadow: 2px 2px 0px #fff;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="score-board">
+        <h1 id="score">0</h1>
+        <div class="cps" id="cps">0 cookies per second</div>
+    </div>
+
+    <button class="cookie-btn" id="cookie" onclick="clickCookie(event)">
+        <!-- Original Simple SVG cookie ensuring it's colorful -->
+        <svg class="cookie-img" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="48" fill="#c27b3d" />
+            <circle cx="50" cy="50" r="40" fill="#CD853F" />
+            <!-- chocolate chips -->
+            <circle cx="30" cy="30" r="5" fill="#4a2e15" />
+            <circle cx="70" cy="40" r="6" fill="#4a2e15" />
+            <circle cx="45" cy="70" r="4" fill="#4a2e15" />
+            <circle cx="20" cy="60" r="5" fill="#4a2e15" />
+            <circle cx="75" cy="75" r="5" fill="#4a2e15" />
+            <circle cx="55" cy="20" r="4" fill="#4a2e15" />
+            <circle cx="85" cy="55" r="3" fill="#4a2e15" />
+            <circle cx="35" cy="45" r="5" fill="#4a2e15" />
+            <circle cx="55" cy="50" r="6" fill="#4a2e15" />
+        </svg>
+    </button>
+
+    <div class="upgrades">
+        <button class="upgrade" id="btn-cursor" onclick="buy('cursor')">
+            <h3>Cursor</h3>
+            <p>+1 CPS</p>
+            <p class="cost" id="cost-cursor">Cost: 15</p>
+            <p id="lvl-cursor">Lvl: 0</p>
+        </button>
+        <button class="upgrade" id="btn-grandma" onclick="buy('grandma')">
+            <h3>Grandma</h3>
+            <p>+5 CPS</p>
+            <p class="cost" id="cost-grandma">Cost: 100</p>
+            <p id="lvl-grandma">Lvl: 0</p>
+        </button>
+        <button class="upgrade" id="btn-factory" onclick="buy('factory')">
+            <h3>Factory</h3>
+            <p>+20 CPS</p>
+            <p class="cost" id="cost-factory">Cost: 1000</p>
+            <p id="lvl-factory">Lvl: 0</p>
+        </button>
+    </div>
+
+    <script>
+        let cookies = 0;
+        let clickPower = 1;
+        let cps = 0;
+
+        const upgrades = {
+            cursor: { cost: 15, cps: 1, count: 0 },
+            grandma: { cost: 100, cps: 5, count: 0 },
+            factory: { cost: 1000, cps: 20, count: 0 }
+        };
+
+        const scoreEl = document.getElementById('score');
+        const cpsEl = document.getElementById('cps');
+
+        window.clickCookie = function (e) {
+            cookies += clickPower;
+            updateUI();
+
+            if (e) {
+                const rect = document.getElementById('cookie').getBoundingClientRect();
+                const text = document.createElement('div');
+                text.className = 'floating-text';
+                text.innerText = `+${clickPower}`;
+                let cx = e.clientX;
+                let cy = e.clientY;
+                if (!cx || !cy) {
+                    cx = rect.left + rect.width / 2;
+                    cy = rect.top + rect.height / 2;
+                }
+                text.style.left = cx + 'px';
+                text.style.top = cy + 'px';
+                document.body.appendChild(text);
+                setTimeout(() => text.remove(), 1000);
+            }
+        }
+
+        window.buy = function (item) {
+            if (cookies >= upgrades[item].cost) {
+                cookies -= upgrades[item].cost;
+                upgrades[item].count++;
+
+                // Recalculate cost (+15% per level)
+                upgrades[item].cost = Math.floor(upgrades[item].cost * 1.15);
+
+                recalcCPS();
+                updateUI();
+            }
+        }
+
+        function recalcCPS() {
+            cps = 0;
+            for (let key in upgrades) {
+                cps += upgrades[key].count * upgrades[key].cps;
+            }
+            cpsEl.innerText = `${cps} cookies per second`;
+        }
+
+        function updateUI() {
+            scoreEl.innerText = Math.floor(cookies);
+
+            for (let key in upgrades) {
+                let el = document.getElementById(`btn-${key}`);
+                document.getElementById(`cost-${key}`).innerText = `Cost: ${upgrades[key].cost}`;
+                document.getElementById(`lvl-${key}`).innerText = `Lvl: ${upgrades[key].count}`;
+
+                if (cookies >= upgrades[key].cost) {
+                    el.disabled = false;
+                } else {
+                    el.disabled = true;
+                }
+            }
+        }
+
+        // Auto clicker loop
+        setInterval(() => {
+            cookies += cps / 10; // add 10 times a sec for smooth updating
+            updateUI();
+        }, 100);
+
+        updateUI();
+    </script>
+</body>
+
+</html>

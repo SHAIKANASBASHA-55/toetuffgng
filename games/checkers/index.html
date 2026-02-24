@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Checkers</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #111827;
+            font-family: 'Nunito', sans-serif;
+            color: white;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            border: 8px solid #5a3825;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .cell {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .dark {
+            background: #8b5a2b;
+        }
+
+        .light {
+            background: #f0d9b5;
+            cursor: default;
+        }
+
+        .piece {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(0, 0, 0, 0.4);
+            pointer-events: none;
+        }
+
+        .red {
+            background: #dc2626;
+            border: 3px solid #991b1b;
+        }
+
+        .black {
+            background: #1e293b;
+            border: 3px solid #0f172a;
+        }
+
+        .king {
+            transform: scale(1.1);
+            border: 3px solid #fbbf24;
+        }
+
+        .selected {
+            outline: 3px solid #fbbf24;
+            outline-offset: -3px;
+        }
+
+        .highlight {
+            background: #bbf7d0;
+            cursor: pointer !important;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .info {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Checkers</h1>
+    <div class="info" id="status">Red's Turn</div>
+    <div class="board" id="board"></div>
+    <script>
+        const bEl = document.getElementById('board');
+        const statusEl = document.getElementById('status');
+        let board = [];
+        let turn = 'red';
+        let sel = null;
+
+        // init logical board
+        for (let r = 0; r < 8; r++) {
+            board[r] = [];
+            for (let c = 0; c < 8; c++) {
+                if (r % 2 !== c % 2) {
+                    if (r < 3) board[r][c] = { col: 'black', king: false };
+                    else if (r > 4) board[r][c] = { col: 'red', king: false };
+                    else board[r][c] = null;
+                } else board[r][c] = null;
+            }
+        }
+
+        function render() {
+            bEl.innerHTML = '';
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    let div = document.createElement('div');
+                    div.className = `cell ${r % 2 !== c % 2 ? 'dark' : 'light'}`;
+                    div.dataset.r = r; div.dataset.c = c;
+
+                    if (sel && sel.r === r && sel.c === c) div.classList.add('selected');
+
+                    // Highlight moves
+                    if (sel && isValidMove(sel.r, sel.c, r, c)) div.classList.add('highlight');
+
+                    if (board[r][c]) {
+                        let p = document.createElement('div');
+                        p.className = `piece ${board[r][c].col} ${board[r][c].king ? 'king' : ''}`;
+                        div.appendChild(p);
+                    }
+
+                    if (r % 2 !== c % 2) {
+                        div.onclick = () => clickCell(r, c);
+                    }
+
+                    bEl.appendChild(div);
+                }
+            }
+            statusEl.innerText = `${turn.charAt(0).toUpperCase() + turn.slice(1)}'s Turn`;
+            statusEl.style.color = turn === 'red' ? '#ef4444' : '#94a3b8';
+        }
+
+        function clickCell(r, c) {
+            if (board[r][c] && board[r][c].col === turn) {
+                sel = { r, c };
+                render();
+            } else if (sel && isValidMove(sel.r, sel.c, r, c)) {
+                move(sel.r, sel.c, r, c);
+            }
+        }
+
+        function isValidMove(fr, fc, tr, tc) {
+            if (board[tr][tc] !== null) return false;
+            let p = board[fr][fc];
+            let dr = tr - fr;
+            let dc = tc - fc;
+
+            // normal
+            if (Math.abs(dc) === 1) {
+                if (!p.king) {
+                    if (p.col === 'red' && dr !== -1) return false;
+                    if (p.col === 'black' && dr !== 1) return false;
+                } else {
+                    if (Math.abs(dr) !== 1) return false;
+                }
+                return true;
+            }
+            // Jump
+            if (Math.abs(dc) === 2 && Math.abs(dr) === 2) {
+                let jr = fr + dr / 2;
+                let jc = fc + dc / 2;
+                let jp = board[jr][jc];
+                if (!jp || jp.col === p.col) return false;
+
+                if (!p.king) {
+                    if (p.col === 'red' && dr !== -2) return false;
+                    if (p.col === 'black' && dr !== 2) return false;
+                }
+                return true;
+            }
+            return false;
+        }
+
+        function move(fr, fc, tr, tc) {
+            let p = board[fr][fc];
+            board[tr][tc] = p;
+            board[fr][fc] = null;
+
+            // was jump? remove piece
+            if (Math.abs(tc - fc) === 2) {
+                board[fr + (tr - fr) / 2][fc + (tc - fc) / 2] = null;
+            }
+
+            // king
+            if (p.col === 'red' && tr === 0) p.king = true;
+            if (p.col === 'black' && tr === 7) p.king = true;
+
+            sel = null;
+            turn = turn === 'red' ? 'black' : 'red';
+            render();
+        }
+
+        render();
+    </script>
+</body>
+
+</html>

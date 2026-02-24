@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Flappy Cube</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #0f172a;
+            overflow: hidden;
+        }
+
+        canvas {
+            background: #38bdf8;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-bottom: 20px solid #22c55e;
+        }
+
+        .tools {
+            color: white;
+            font-family: 'Nunito', sans-serif;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="flappy" width="400" height="500"></canvas>
+    <div class="tools">Space/Click to Flap</div>
+    <script>
+        const cvs = document.getElementById("flappy");
+        const ctx = cvs.getContext("2d");
+
+        let frames = 0;
+        const bg = { sX: 0, sY: 0, w: 275, h: 226, x: 0, y: cvs.height - 226 };
+        let score = 0;
+
+        const bird = {
+            x: 50, y: 150, w: 34, h: 24,
+            gravity: 0.25, jump: 4.6, speed: 0,
+            draw() { ctx.fillStyle = "#f59e0b"; ctx.fillRect(this.x, this.y, this.w, this.h); },
+            flap() { this.speed = -this.jump; },
+            update() {
+                this.speed += this.gravity;
+                this.y += this.speed;
+                if (this.y + this.h >= cvs.height) { this.y = cvs.height - this.h; reset(); }
+                if (this.y <= 0) { this.y = 0; this.speed = 0; }
+            }
+        }
+
+        const pipes = {
+            position: [],
+            w: 53, h: 400, gap: 110,
+            dx: 2,
+            draw() {
+                for (let i = 0; i < this.position.length; i++) {
+                    let p = this.position[i];
+                    let topY = p.y;
+                    let bottomY = p.y + this.h + this.gap;
+                    // top pipe
+                    ctx.fillStyle = "#16a34a"; ctx.fillRect(p.x, topY, this.w, this.h);
+                    // bottom pipe
+                    ctx.fillRect(p.x, bottomY, this.w, this.h);
+                }
+            },
+            update() {
+                if (frames % 100 == 0) this.position.push({ x: cvs.width, y: -200 * (Math.random() + 1) });
+                for (let i = 0; i < this.position.length; i++) {
+                    let p = this.position[i];
+                    p.x -= this.dx;
+                    // Collision
+                    let bottomPipeYPos = p.y + this.h + this.gap;
+                    if (bird.x + bird.w > p.x && bird.x < p.x + this.w && bird.y + bird.h > p.y && bird.y < p.y + this.h) { reset(); }
+                    if (bird.x + bird.w > p.x && bird.x < p.x + this.w && bird.y + bird.h > bottomPipeYPos && bird.y < bottomPipeYPos + this.h) { reset(); }
+
+                    if (p.x + this.w <= 0) this.position.shift();
+
+                    if (p.x == 50) score++;
+                }
+            }
+        }
+
+        function drawScore() {
+            ctx.fillStyle = "#fff"; ctx.font = "35px sans-serif";
+            ctx.fillText(score, cvs.width / 2 - 10, 50);
+        }
+
+        function reset() {
+            bird.speed = 0; bird.y = 150;
+            pipes.position = [];
+            score = 0; frames = 0;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, cvs.width, cvs.height);
+            pipes.draw();
+            bird.draw();
+            drawScore();
+        }
+
+        function update() { bird.update(); pipes.update(); frames++; }
+
+        function loop() { update(); draw(); requestAnimationFrame(loop); }
+
+        document.addEventListener("keydown", (e) => { if (e.code === "Space") bird.flap(); });
+        cvs.addEventListener("mousedown", () => { bird.flap(); });
+
+        loop();
+    </script>
+</body>
+
+</html>

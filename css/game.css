@@ -1,119 +1,138 @@
-/* =========================
-   GAME PAGE – NEON CYBER LOOK
-   ========================= */
+/* Game Player B&W Claymorphism */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 
-/* Page base */
-body {
-    margin: 0;
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    color: #b0ffff;
-    background: radial-gradient(circle at top, #1bffff22 0, #020617 55%, #000010 100%);
-    overflow: hidden;
+:root {
+    --bg-color: #e0e5ec;
+    --text-main: #1a1a1a;
+    --shadow-dark: #a3b1c6;
+    --shadow-light: #ffffff;
+
+    --clay-shadow:
+        8px 8px 16px var(--shadow-dark),
+        -8px -8px 16px var(--shadow-light);
+    --clay-pressed:
+        inset 6px 6px 12px var(--shadow-dark),
+        inset -6px -6px 12px var(--shadow-light);
+    --clay-black-bg: #1a1a1a;
 }
 
-/* Top neon navbar */
+body {
+    margin: 0;
+    font-family: 'Nunito', sans-serif;
+    color: var(--text-main);
+    background: var(--bg-color);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Base Top Navbar */
 .navbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 20px;
-    height: 64px;
-
-    background: radial-gradient(circle at top left, #00ffff33, #020617 55%, #050816 100%);
-    border-bottom: 1px solid #00ffff55;
-    box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+    padding: 16px 32px;
+    height: 80px;
+    background: var(--bg-color);
+    box-shadow: 0 4px 15px rgba(163, 177, 198, 0.3);
+    z-index: 10;
 }
 
 /* Back link */
 .navbar a {
-    color: #ff4bff;
+    color: var(--text-main);
     text-decoration: none;
-    font-size: 0.95rem;
-    padding: 6px 14px;
+    font-size: 18px;
+    font-weight: 900;
+    padding: 12px 24px;
     border-radius: 999px;
-    border: 1px solid #ff4bff88;
-    background: rgba(15, 23, 42, 0.7);
-    box-shadow: 0 0 12px rgba(255, 75, 255, 0.6);
-    transition: 0.25s;
+    background: var(--bg-color);
+    box-shadow: var(--clay-shadow);
+    transition: all 0.2s ease;
 }
 
 .navbar a:hover {
-    background: #ff4bff;
-    color: #050816;
-    box-shadow: 0 0 24px rgba(255, 75, 255, 0.9);
+    box-shadow: var(--clay-pressed);
+    color: var(--text-main);
 }
 
 /* Title centred */
 #gameTitle {
     flex: 1;
     text-align: center;
-    font-size: 1.1rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #7dd3fc;
-    text-shadow: 0 0 14px rgba(56, 189, 248, 0.9);
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--text-main);
+    letter-spacing: -0.5px;
+    margin: 0;
+    text-shadow: 1px 1px 2px #fff;
 }
 
 /* Fullscreen button */
 .fs-btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
+    gap: 10px;
+    padding: 12px 24px;
     border-radius: 999px;
-    border: 1px solid #00ffff88;
-    background: rgba(10, 20, 40, 0.9);
+    border: none;
+    background: var(--clay-black-bg);
     cursor: pointer;
-    box-shadow: 0 0 16px rgba(0, 255, 255, 0.7);
-    color: #00ffff;              /* text color */
-    font-size: 0.9rem;
-    transition: 0.25s;
+    box-shadow:
+        6px 6px 12px rgba(0, 0, 0, 0.5),
+        -4px -4px 8px rgba(255, 255, 255, 0.2),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.5);
+    font-family: 'Nunito', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: white;
+    transition: all 0.2s ease;
 }
 
 .fs-btn img {
-    height: 18px;
-    filter: drop-shadow(0 0 4px #00ffff);
+    height: 20px;
+    filter: brightness(0) invert(1);
     pointer-events: none;
 }
 
-.fs-btn span {
-    color: #00ffff;              /* ensures letters are neon cyan */
-}
-
 .fs-btn:hover {
-    background: #00ffff;
-    color: #050816;
-    box-shadow: 0 0 28px rgba(0, 255, 255, 1);
+    transform: translateY(-2px);
+    box-shadow:
+        8px 8px 16px rgba(0, 0, 0, 0.6),
+        -4px -4px 8px rgba(255, 255, 255, 0.2),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.fs-btn:hover span {
-    color: #050816;              /* text turns dark on hover for contrast */
+.fs-btn:active {
+    transform: scale(0.95);
+    box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.8), inset -4px -4px 8px rgba(255, 255, 255, 0.1);
 }
-
 
 /* Game area */
 .game-container {
-    height: calc(100vh - 64px); /* navbar height */
-    padding: 0;
+    flex: 1;
+    padding: 32px;
     display: flex;
     justify-content: center;
     align-items: center;
-
-    background: url("https://4kwallpapers.com/images/walls/thumbs_3t/8801.jpg") center/cover no-repeat fixed;
+    background: var(--bg-color);
 }
-
 
 /* Iframe frame */
 #gameIframe {
     width: 100%;
     height: 100%;
     max-width: 1200px;
-    max-height: 100%;
-
-    border-radius: 24px;
-    border: 2px solid #00ffffaa;
-    background: #000;
+    max-height: 800px;
+    border-radius: 32px;
+    border: 12px solid var(--bg-color);
+    background: #111;
     box-shadow:
-        0 0 40px rgba(0, 255, 255, 0.7),
-        0 0 80px rgba(244, 63, 252, 0.55);
+        15px 15px 30px var(--shadow-dark),
+        -15px -15px 30px var(--shadow-light),
+        inset 4px 4px 8px rgba(255, 255, 255, 0.7),
+        inset -4px -4px 8px rgba(163, 177, 198, 0.4);
 }

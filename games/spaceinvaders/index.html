@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Space Invaders</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #1e1b4b;
+            font-family: 'Courier New', Courier, monospace;
+            color: white;
+            overflow: hidden;
+        }
+
+        canvas {
+            background: #000;
+            border: 4px solid #6366f1;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+        }
+
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            width: 600px;
+            padding: 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .tools {
+            margin-top: 10px;
+            text-align: center;
+            color: #a5b4fc;
+        }
+
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #4f46e5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hud">
+        <span id="scoreText">SCORE: 0</span>
+        <button onclick="document.location.reload()">RESTART</button>
+    </div>
+    <canvas id="game" width="600" height="500"></canvas>
+    <div class="tools">Use Arrow Keys to Move | Space to Shoot</div>
+    <script>
+        const cvs = document.getElementById("game");
+        const ctx = cvs.getContext("2d");
+        const scoreEl = document.getElementById("scoreText");
+
+        let score = 0;
+        let gameOver = false;
+
+        // Player
+        const player = { x: 275, y: 450, w: 50, h: 20, color: "#38bdf8", speed: 5, dx: 0 };
+        let bullets = [];
+
+        // Invaders
+        let invaders = [];
+        let invaderDir = 1;
+        let invaderSpeed = 1;
+
+        function initInvaders() {
+            invaders = [];
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 9; c++) {
+                    invaders.push({
+                        x: c * 50 + 50,
+                        y: r * 40 + 50,
+                        w: 30, h: 20,
+                        status: 1
+                    });
+                }
+            }
+            invaderSpeed = 1;
+        }
+        initInvaders();
+
+        // Input listeners
+        document.addEventListener("keydown", (e) => {
+            if (e.code === "ArrowLeft") player.dx = -player.speed;
+            if (e.code === "ArrowRight") player.dx = player.speed;
+            if (e.code === "Space") {
+                // throttle bullets
+                if (bullets.length < 3) {
+                    bullets.push({ x: player.x + player.w / 2 - 2, y: player.y, w: 4, h: 10, speed: 7 });
+                }
+            }
+        });
+
+        document.addEventListener("keyup", (e) => {
+            if (e.code === "ArrowLeft" || e.code === "ArrowRight") player.dx = 0;
+        });
+
+        function draw() {
+            ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+            // Player
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.w, player.h);
+
+            // Bullets
+            ctx.fillStyle = "#fef08a";
+            bullets.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
+
+            // Invaders
+            let remaining = 0;
+            let edgeHit = false;
+
+            invaders.forEach(inv => {
+                if (inv.status === 1) {
+                    remaining++;
+                    ctx.fillStyle = "#a3e635";
+                    ctx.fillRect(inv.x, inv.y, inv.w, inv.h);
+
+                    // check edge hit
+                    if (inv.x + inv.w + invaderSpeed * invaderDir > cvs.width || inv.x + invaderSpeed * invaderDir < 0) {
+                        edgeHit = true;
+                    }
+                }
+            });
+
+            if (remaining === 0) {
+                // next level
+                initInvaders();
+                invaderSpeed += 0.5; // getting faster
+            }
+
+            // Move invaders
+            if (edgeHit) {
+                invaderDir *= -1;
+                invaders.forEach(inv => inv.y += 20); // drop down
+            } else {
+                invaders.forEach(inv => inv.x += invaderSpeed * invaderDir);
+            }
+
+            // Move player
+            player.x += player.dx;
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.w > cvs.width) player.x = cvs.width - player.w;
+
+            // Move bullets & Check Collisions
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                let b = bullets[i];
+                b.y -= b.speed;
+                if (b.y < 0) { bullets.splice(i, 1); continue; }
+
+                // hit invader?
+                for (let j = 0; j < invaders.length; j++) {
+                    let inv = invaders[j];
+                    if (inv.status === 1 && b.x > inv.x && b.x < inv.x + inv.w && b.y > inv.y && b.y < inv.y + inv.h) {
+                        inv.status = 0;
+                        score += 10;
+                        scoreEl.innerText = `SCORE: ${score}`;
+                        bullets.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+
+            // Game Over check
+            invaders.forEach(inv => {
+                if (inv.status === 1 && inv.y + inv.h >= player.y) gameOver = true;
+            });
+
+            if (gameOver) {
+                ctx.fillStyle = "rgba(0,0,0,0.7)";
+                ctx.fillRect(0, 0, cvs.width, cvs.height);
+                ctx.fillStyle = "red";
+                ctx.font = "bold 50px Courier";
+                ctx.fillText("GAME OVER", cvs.width / 2 - 130, cvs.height / 2);
+                return;
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+</body>
+
+</html>

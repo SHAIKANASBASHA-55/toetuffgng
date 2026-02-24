@@ -3,214 +3,186 @@
 
 <head>
     <title>ToeTuff Gang (GNG) – Free Online Browser Games</title>
-
-    <meta name="description"
-        content="ToeTuff Gang is a student-built project created by Shaik Anas for learning and educational purposes only. This application is not an official or commercial product." />
-
-
-
-    <meta name="robots" content="index, follow" />
-    <meta name="google-site-verification" content="N7TUZwivBtIclU_IrhALGnub9L2trj7CkBNorN0nCCw" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="css/style.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@700&display=swap"
-        rel="stylesheet">
-
+    <link rel="stylesheet" href="css/style.css?v=6">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- 3D Model Viewer -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 </head>
 
 <body>
-    <!-- Futuristic Robotic Background -->
-    <div id="particles-bg">
-        <canvas id="robotBg"></canvas>
-    </div>
-
-    <div class="page-container">
-        <!-- Header Logo + Search -->
-        <header class="header">
-
+    <header class="navbar">
+        <div class="nav-content">
             <div class="logo">
-                <!-- Clean futuristic neon logo -->
-                <img src="favicon.png" alt="toetuffgng Logo">
+                <img src="favicon.png" alt="toetuffgng" class="logo-icon">
                 <h1>toetuffgng</h1>
             </div>
-            <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="Search games...">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search for games...">
             </div>
-        </header>
-        <p>Welcome to ToeTuff Gang (GNG), an online browser gaming platform.</p>
-        <section class="featured">
-            <div class="featured-item active">
-                <img src="https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&q=80&w=1200"
-                    alt="Classic Chess">
-                <div class="banner-overlay">
-                    <h2>Classic Chess</h2>
-                    <p>Challenge your mind with the ultimate logic game</p>
-                    <a href="game.html?id=chess" style="text-decoration:none;"><button class="play-btn">Play
-                            Now</button></a>
-                </div>
-            </div>
+        </div>
+    </header>
 
-            <div class="featured-item">
-                <img src="https://images.unsplash.com/photo-1628198759368-ffae2b2ac1c9?auto=format&fit=crop&q=80&w=1200"
-                    alt="Carrom Clash">
-                <div class="banner-overlay">
-                    <h2>Carrom Clash</h2>
-                    <p>Flick your way to victory</p>
-                    <a href="game.html?id=carrom" style="text-decoration:none;"><button class="play-btn">Play
-                            Now</button></a>
+    <main class="container">
+        <!-- Featured Hero Section -->
+        <section class="hero-section">
+            <div class="model-showcase">
+                <div class="robot-controls left-controls">
+                    <button onclick="playAction('robot1', 'Wave')">Hi 👋</button>
+                    <button onclick="playAction('robot1', 'Dance')">Dance 🕺</button>
+                    <button onclick="playAction('robot1', 'Sitting')">Sit 🪑</button>
+                    <button onclick="playAction('robot1', 'Death')">Sleep 💤</button>
+                    <button onclick="playAction('robot1', 'Punch')">Punch 🥊</button>
+                    <button onclick="playAction('robot1', 'Shoot')">Shoot 🔫</button>
+                    <button onclick="playAction('robot1', 'Run')">Run 🏃‍♂️</button>
                 </div>
+                <!-- Cloud Comment Box -->
+                <div class="cloud-comment right">fun robots ✨</div>
+                <!-- Live 3D Model 1 -->
+                <model-viewer id="robot1" src="https://modelviewer.dev/shared-assets/models/RobotExpressive.glb"
+                    autoplay animation-name="Idle" auto-rotate rotation-per-second="10deg" camera-controls
+                    shadow-intensity="1" environment-image="neutral" camera-orbit="45deg 75deg 180%"
+                    min-camera-orbit="auto auto 100%" bounds="tight"
+                    style="width: 100%; height: 100%; background-color: transparent; cursor: grab;">
+                </model-viewer>
             </div>
-
-            <div class="featured-item">
-                <img src="https://images.unsplash.com/photo-1511204663731-318e9a1aa01a?auto=format&fit=crop&q=80&w=1200"
-                    alt="Archery Master">
-                <div class="banner-overlay">
-                    <h2>Archery Master</h2>
-                    <p>Test your target-hitting precision</p>
-                    <a href="game.html?id=archery" style="text-decoration:none;"><button class="play-btn">Play
-                            Now</button></a>
+            <div class="model-showcase">
+                <div class="robot-controls right-controls">
+                    <button onclick="playAction('robot2', 'Wave')">Hi 👋</button>
+                    <button onclick="playAction('robot2', 'Dance')">Dance 🕺</button>
+                    <button onclick="playAction('robot2', 'Sitting')">Sit 🪑</button>
+                    <button onclick="playAction('robot2', 'Death')">Sleep 💤</button>
+                    <button onclick="playAction('robot2', 'Punch')">Punch 🥊</button>
+                    <button onclick="playAction('robot2', 'Shoot')">Shoot 🔫</button>
+                    <button onclick="playAction('robot2', 'Run')">Run 🏃‍♂️</button>
                 </div>
+                <!-- Cloud Comment Box -->
+                <div class="cloud-comment left" style="animation-delay: 1.5s;">super fun! 🎈</div>
+                <!-- Live 3D Model 2 -->
+                <model-viewer id="robot2" src="https://modelviewer.dev/shared-assets/models/RobotExpressive.glb"
+                    autoplay animation-name="Sitting" auto-rotate rotation-per-second="-10deg" camera-controls
+                    shadow-intensity="1" environment-image="neutral" camera-orbit="315deg 75deg 180%"
+                    min-camera-orbit="auto auto 100%" bounds="tight"
+                    style="width: 100%; height: 100%; background-color: transparent; cursor: grab;">
+                </model-viewer>
             </div>
         </section>
-        <!-- Category Buttons -->
-        <div class="category-filters" id="categoryFilters">
-            <button class="cat-btn active" data-cat="all">All</button>
+
+        <!-- 3D Interactions Script -->
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const models = document.querySelectorAll('model-viewer');
+
+                models.forEach(model => {
+                    // Dress Robots in Uniforms (Cloth/Fabric Material)
+                    model.addEventListener('load', () => {
+                        const material = model.model.materials[0];
+                        if (material) {
+                            // Turn off metal, turn up roughness to make them look like soft cloth/plushies!
+                            material.pbrMetallicRoughness.setMetallicFactor(0);
+                            material.pbrMetallicRoughness.setRoughnessFactor(1);
+
+                            if (model.id === "robot1") {
+                                // Blue Cloth Uniform
+                                material.pbrMetallicRoughness.setBaseColorFactor([0.1, 0.3, 0.8, 1]);
+                            } else if (model.id === "robot2") {
+                                // Red Cloth Uniform
+                                material.pbrMetallicRoughness.setBaseColorFactor([0.8, 0.1, 0.1, 1]);
+                            }
+                        }
+                    });
+
+                    // Get confused (shake head) on spin/camera move
+                    model.addEventListener('camera-change', (e) => {
+                        if (e.detail.source === 'user-interaction' && window.isInteracting && !window.isInteracting[model.id]) {
+                            window.playAction(model.id, "No", 1500, true);
+                        }
+                    });
+                });
+            });
+
+            window.isInteracting = { robot1: false, robot2: false };
+            window.resetTimers = { robot1: null, robot2: null };
+            window.baseAnimations = { robot1: "Idle", robot2: "Sitting" };
+
+            window.playAction = (robotId, action, overrideDuration, isNo) => {
+                const model = document.getElementById(robotId);
+                if (!model) return;
+
+                if (window.isInteracting[robotId] && !isNo) return;
+
+                let duration = overrideDuration || 2500;
+                if (action === "Dance" || action === "Death") duration = 3500;
+                if (action === "Run") duration = 3000;
+                if (action === "Punch") duration = 1500;
+
+                // For Shoot, we use ThumbsUp animation as a proxy for holding a gun
+                let animToPlay = action === "Shoot" ? "ThumbsUp" : action;
+
+                model.animationName = animToPlay;
+                window.isInteracting[robotId] = true;
+                clearTimeout(window.resetTimers[robotId]);
+
+                // Handle Fight Interaction
+                if (action === "Punch" || action === "Shoot") {
+                    let otherId = robotId === "robot1" ? "robot2" : "robot1";
+                    let otherBot = document.getElementById(otherId);
+
+                    if (otherBot) {
+                        let delay = action === "Shoot" ? 200 : 500; // Guns hit instantly, punches take 0.5s
+
+                        if (action === "Shoot") {
+                            // Flash effect for Gunshot
+                            setTimeout(() => {
+                                otherBot.style.transition = "filter 0.05s";
+                                otherBot.style.filter = "brightness(3) sepia(1) hue-rotate(-50deg) saturate(5)";
+                                setTimeout(() => {
+                                    otherBot.style.filter = "none";
+                                }, 100);
+                            }, 50);
+                        }
+
+                        setTimeout(() => {
+                            clearTimeout(window.resetTimers[otherId]);
+                            otherBot.animationName = "Death";
+                            window.isInteracting[otherId] = true;
+
+                            window.resetTimers[otherId] = setTimeout(() => {
+                                otherBot.animationName = window.baseAnimations[otherId];
+                                window.isInteracting[otherId] = false;
+                            }, 4000); // 4 seconds KO time
+                        }, delay);
+                    }
+                }
+
+                // Reset back to base
+                window.resetTimers[robotId] = setTimeout(() => {
+                    model.animationName = window.baseAnimations[robotId];
+                    window.isInteracting[robotId] = false;
+                }, duration);
+            };
+        </script>
+
+        <!-- Categories Filters -->
+        <div class="categories" id="categoryFilters">
+            <button class="cat-btn active" data-cat="all">All Games</button>
             <button class="cat-btn" data-cat="board">Board Games</button>
             <button class="cat-btn" data-cat="arcade">Arcade</button>
             <button class="cat-btn" data-cat="puzzle">Puzzle</button>
         </div>
 
-        <!-- GAMES GRID -->
-        <section class="games-section">
-            <h2 id="sectionTitle">All Games</h2>
-
+        <!-- All Games Grid -->
+        <section class="games-grid-container">
+            <h2 id="sectionTitle" class="section-title">New Games</h2>
             <div class="games-grid" id="gamesGrid">
                 <!-- Populated by JS -->
             </div>
         </section>
+    </main>
 
-
-    </div>
-
-    <!-- Your main game JS if needed -->
-    <script type="module" src="js/main.js"></script>
-
-    <!-- Robotic background script -->
-    <script>
-        const canvas = document.getElementById('robotBg');
-        const ctx = canvas.getContext('2d');
-
-        let width, height, particles;
-
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-
-        function createScene() {
-            particles = [];
-            const count = 70;
-
-            for (let i = 0; i < count; i++) {
-                particles.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
-                    vx: (Math.random() - 0.5) * 0.4,
-                    vy: (Math.random() - 0.5) * 0.4,
-                    size: 2 + Math.random() * 3,
-                    glow: Math.random() > 0.5 ? '#00ffff' : '#ff00ff'
-                });
-            }
-        }
-        createScene();
-
-        function draw() {
-            ctx.clearRect(0, 0, width, height);
-
-            // subtle dark overlay
-            ctx.fillStyle = 'rgba(3, 0, 20, 0.9)';
-            ctx.fillRect(0, 0, width, height);
-
-            // robotic grid
-            ctx.strokeStyle = 'rgba(0, 255, 255, 0.08)';
-            ctx.lineWidth = 1;
-            const step = 80;
-            ctx.beginPath();
-            for (let x = 0; x < width; x += step) {
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, height);
-            }
-            for (let y = 0; y < height; y += step) {
-                ctx.moveTo(0, y);
-                ctx.lineTo(width, y);
-            }
-            ctx.stroke();
-
-            // particles
-            particles.forEach(p => {
-                p.x += p.vx;
-                p.y += p.vy;
-
-                if (p.x < 0 || p.x > width) p.vx *= -1;
-                if (p.y < 0 || p.y > height) p.vy *= -1;
-
-                const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 4);
-                gradient.addColorStop(0, p.glow);
-                gradient.addColorStop(1, 'rgba(0,0,0,0)');
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size * 4, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = '#0ff';
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fill();
-            });
-
-            // connections like circuits
-            ctx.lineWidth = 1.2;
-            particles.forEach((a, i) => {
-                for (let j = i + 1; j < particles.length; j++) {
-                    const b = particles[j];
-                    const dx = a.x - b.x;
-                    const dy = a.y - b.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 140) {
-                        const alpha = 1 - dist / 140;
-                        ctx.strokeStyle = `rgba(0, 255, 255, ${alpha * 0.6})`;
-                        ctx.beginPath();
-                        ctx.moveTo(a.x, a.y);
-                        ctx.lineTo(b.x, b.y);
-                        ctx.stroke();
-                    }
-                }
-            });
-
-            requestAnimationFrame(draw);
-        }
-        draw();
-    </script>
-    <footer class="footer">
-        <div class="footer-content">
-            <p>
-                This project is created for learning and educational purposes only.
-            </p>
-
-            <p class="creator">
-                Created by <strong>SHAIK ANAS BASHA</strong>
-            </p>
-
-            <p class="copyright">
-                © 2025 ToeTuff Gang. All rights reserved.
-            </p>
-        </div>
-    </footer>
+    <script type="module" src="js/main.js?v=6"></script>
 </body>
 
 </html>

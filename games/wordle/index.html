@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Word Guess</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #121213;
+            font-family: 'Nunito', sans-serif;
+            color: white;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-rows: repeat(6, 60px);
+            gap: 6px;
+            margin-bottom: 30px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            gap: 6px;
+        }
+
+        .tile {
+            border: 2px solid #3a3a3c;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: transform 0.2s, background-color 0.4s;
+        }
+
+        .correct {
+            background-color: #538d4e;
+            border-color: #538d4e;
+        }
+
+        .present {
+            background-color: #b59f3b;
+            border-color: #b59f3b;
+        }
+
+        .absent {
+            background-color: #3a3a3c;
+            border-color: #3a3a3c;
+        }
+
+        .keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .key-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .key {
+            background: #818384;
+            border-radius: 4px;
+            padding: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            transition: 0.2s;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .key.wide {
+            min-width: 50px;
+        }
+
+        .key:hover {
+            opacity: 0.8;
+        }
+
+        #message {
+            position: absolute;
+            top: 100px;
+            padding: 12px 20px;
+            background: white;
+            color: black;
+            font-weight: bold;
+            border-radius: 6px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        button.restart {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #538d4e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="message">Not in word list</div>
+    <h1>WORD GUESS</h1>
+
+    <div class="board" id="board"></div>
+    <div class="keyboard" id="keyboard"></div>
+    <button class="restart" id="restartBtn" onclick="init()">Play Again</button>
+
+    <script>
+        const WORDS = ["GAMES", "BOARD", "CHESS", "PIXEL", "SCORE", "SMASH", "MOUSE", "LEVEL", "BLOCK"];
+        let answer = "";
+        let guesses = [];
+        let currentRow = 0;
+        let currentCol = 0;
+        let gameOver = false;
+
+        const boardEl = document.getElementById('board');
+        const keyEl = document.getElementById('keyboard');
+        const msgEl = document.getElementById('message');
+        const restartBtn = document.getElementById('restartBtn');
+
+        const keys = [
+            ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+            ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+            ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACK']
+        ];
+
+        function init() {
+            answer = WORDS[Math.floor(Math.random() * WORDS.length)];
+            guesses = Array(6).fill().map(() => Array(5).fill(''));
+            currentRow = 0;
+            currentCol = 0;
+            gameOver = false;
+            restartBtn.style.display = 'none';
+            renderBoard();
+            renderKeyboard();
+        }
+
+        function renderBoard() {
+            boardEl.innerHTML = '';
+            guesses.forEach((row, rIdx) => {
+                let rowEl = document.createElement('div');
+                rowEl.className = 'row';
+                row.forEach((letter, cIdx) => {
+                    let tileEl = document.createElement('div');
+                    tileEl.className = 'tile';
+                    tileEl.id = `tile-${rIdx}-${cIdx}`;
+                    tileEl.innerText = letter;
+                    rowEl.appendChild(tileEl);
+                });
+                boardEl.appendChild(rowEl);
+            });
+        }
+
+        function renderKeyboard() {
+            keyEl.innerHTML = '';
+            keys.forEach(row => {
+                let rowEl = document.createElement('div');
+                rowEl.className = 'key-row';
+                row.forEach(key => {
+                    let keyBtn = document.createElement('div');
+                    keyBtn.className = 'key';
+                    if (key === 'ENTER' || key === 'BACK') keyBtn.classList.add('wide');
+                    keyBtn.id = `key-${key}`;
+                    keyBtn.innerText = key === 'BACK' ? '⌫' : key;
+                    keyBtn.onclick = () => handleInput(key);
+                    rowEl.appendChild(keyBtn);
+                });
+                keyEl.appendChild(rowEl);
+            });
+        }
+
+        function showMessage(msg, duration = 2000) {
+            msgEl.innerText = msg;
+            msgEl.style.opacity = 1;
+            setTimeout(() => msgEl.style.opacity = 0, duration);
+        }
+
+        function handleInput(key) {
+            if (gameOver) return;
+
+            if (key === 'BACK' || key === 'Backspace') {
+                if (currentCol > 0) {
+                    currentCol--;
+                    guesses[currentRow][currentCol] = '';
+                    document.getElementById(`tile-${currentRow}-${currentCol}`).innerText = '';
+                    document.getElementById(`tile-${currentRow}-${currentCol}`).style.borderColor = '#3a3a3c';
+                }
+            }
+            else if (key === 'ENTER' || key === 'Enter') {
+                if (currentCol === 5) {
+                    let guess = guesses[currentRow].join('');
+                    checkGuess(guess);
+                } else {
+                    showMessage('Not enough letters');
+                }
+            }
+            else if (/^[A-Z]$/.test(key)) {
+                if (currentCol < 5) {
+                    guesses[currentRow][currentCol] = key;
+                    let tile = document.getElementById(`tile-${currentRow}-${currentCol}`);
+                    tile.innerText = key;
+                    tile.style.borderColor = '#565758';
+                    tile.style.transform = 'scale(1.1)';
+                    setTimeout(() => tile.style.transform = 'scale(1)', 100);
+                    currentCol++;
+                }
+            }
+        }
+
+        function checkGuess(guess) {
+            let answerArr = answer.split('');
+
+            // Coloring logic (simplified)
+            for (let i = 0; i < 5; i++) {
+                let tile = document.getElementById(`tile-${currentRow}-${i}`);
+                let keyBtn = document.getElementById(`key-${guess[i]}`);
+
+                setTimeout(() => {
+                    if (guess[i] === answerArr[i]) {
+                        tile.classList.add('correct');
+                        if (keyBtn) keyBtn.className = 'key correct';
+                    } else if (answerArr.includes(guess[i])) {
+                        tile.classList.add('present');
+                        if (keyBtn && !keyBtn.classList.contains('correct')) keyBtn.classList.add('present');
+                    } else {
+                        tile.classList.add('absent');
+                        if (keyBtn && !keyBtn.classList.contains('correct') && !keyBtn.classList.contains('present')) keyBtn.classList.add('absent');
+                    }
+                }, i * 250);
+            }
+
+            setTimeout(() => {
+                if (guess === answer) {
+                    showMessage("Genius!", 5000);
+                    gameOver = true;
+                    restartBtn.style.display = 'block';
+                } else if (currentRow === 5) {
+                    showMessage(answer, 5000);
+                    gameOver = true;
+                    restartBtn.style.display = 'block';
+                } else {
+                    currentRow++;
+                    currentCol = 0;
+                }
+            }, 1500);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            handleInput(e.key.toUpperCase());
+        });
+
+        init();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Speed Typer</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #222;
+            font-family: 'Courier New', Courier, monospace;
+            color: white;
+        }
+
+        .container {
+            background: #333;
+            padding: 40px;
+            border-radius: 12px;
+            width: 600px;
+            max-width: 90vw;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #84cc16;
+        }
+
+        #quote-display {
+            font-size: 28px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #aaa;
+            min-height: 140px;
+        }
+
+        .correct {
+            color: #84cc16;
+        }
+
+        .incorrect {
+            color: #ef4444;
+            text-decoration: underline;
+        }
+
+        #quote-input {
+            width: 100%;
+            height: 120px;
+            background: #111;
+            border: 2px solid #555;
+            border-radius: 8px;
+            color: white;
+            font-size: 24px;
+            padding: 15px;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        #quote-input:focus {
+            border-color: #84cc16;
+            box-shadow: 0 0 15px rgba(132, 204, 22, 0.3);
+        }
+
+        .wpm {
+            background: #84cc16;
+            color: #111;
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-weight: 900;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="stats">
+            <span class="wpm" id="wpm">WPM: 0</span>
+            <span id="timer">Time: 0s</span>
+        </div>
+        <div id="quote-display">Press any key in the box below to start typing...</div>
+        <textarea id="quote-input" autofocus placeholder="Start typing here..."></textarea>
+    </div>
+
+    <script>
+        const QUOTES = [
+            "The quick brown fox jumps over the lazy dog.",
+            "Programming isn't about what you know, it's about what you can figure out.",
+            "To be or not to be, that is the question.",
+            "May the Force be with you.",
+            "I have a bad feeling about this mechanics.",
+            "Hello world is the most famous program in the entire history of computing."
+        ];
+
+        const quoteDisplayElement = document.getElementById('quote-display');
+        const quoteInputElement = document.getElementById('quote-input');
+        const timerElement = document.getElementById('timer');
+        const wpmElement = document.getElementById('wpm');
+
+        let startTime;
+        let timerInterval;
+        let quote = "";
+
+        function getRandomQuote() {
+            return QUOTES[Math.floor(Math.random() * QUOTES.length)];
+        }
+
+        async function renderNewQuote() {
+            quote = getRandomQuote();
+            quoteDisplayElement.innerHTML = '';
+            quote.split('').forEach(character => {
+                const characterSpan = document.createElement('span');
+                characterSpan.innerText = character;
+                quoteDisplayElement.appendChild(characterSpan);
+            });
+            quoteInputElement.value = null;
+            startTimer();
+        }
+
+        let started = false;
+
+        quoteInputElement.addEventListener('input', () => {
+            if (!started) {
+                started = true;
+                startTime = new Date();
+                timerInterval = setInterval(() => {
+                    let timePassed = Math.floor((new Date() - startTime) / 1000);
+                    timerElement.innerText = `Time: ${timePassed}s`;
+
+                    // Calc WPM
+                    let wordsTyped = quoteInputElement.value.length / 5;
+                    let minutesPassed = timePassed / 60;
+                    let wpm = Math.round(wordsTyped / minutesPassed);
+                    if (wpm === Infinity || isNaN(wpm) || wpm < 0) wpm = 0;
+                    wpmElement.innerText = `WPM: ${wpm}`;
+
+                }, 1000);
+            }
+
+            const arrayQuote = quoteDisplayElement.querySelectorAll('span');
+            const arrayValue = quoteInputElement.value.split('');
+
+            let correct = true;
+            arrayQuote.forEach((characterSpan, index) => {
+                const character = arrayValue[index];
+                if (character == null) {
+                    characterSpan.classList.remove('correct');
+                    characterSpan.classList.remove('incorrect');
+                    correct = false;
+                } else if (character === characterSpan.innerText) {
+                    characterSpan.classList.add('correct');
+                    characterSpan.classList.remove('incorrect');
+                } else {
+                    characterSpan.classList.remove('correct');
+                    characterSpan.classList.add('incorrect');
+                    correct = false;
+                }
+            });
+
+            if (correct) {
+                clearInterval(timerInterval);
+                started = false;
+                let finalTime = Math.floor((new Date() - startTime) / 1000);
+                let words = quote.length / 5;
+                let finalWPM = Math.round((words / finalTime) * 60);
+
+                wpmElement.innerText = `WPM: ${finalWPM}`;
+                setTimeout(() => {
+                    alert(`Great Job! Final WPM: ${finalWPM}`);
+                    renderNewQuote();
+                    timerElement.innerText = `Time: 0s`;
+                }, 100);
+            }
+        });
+
+        renderNewQuote();
+        started = false;
+        clearInterval(timerInterval);
+        timerElement.innerText = `Time: 0s`;
+    </script>
+</body>
+
+</html>

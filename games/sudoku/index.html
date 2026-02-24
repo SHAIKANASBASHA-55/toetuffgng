@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sudoku Pro</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f0f9ff;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(9, 50px);
+            grid-template-rows: repeat(9, 50px);
+            gap: 1px;
+            background: #1e293b;
+            border: 3px solid #1e293b;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .cell {
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 800;
+            font-family: 'Nunito', sans-serif;
+            outline: none;
+            color: #3b82f6;
+        }
+
+        input[readonly] {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .cell:nth-child(3n) {
+            border-right: 3px solid #1e293b;
+        }
+
+        .cell:nth-child(9n) {
+            border-right: none;
+        }
+
+        .cell:nth-child(n+19):nth-child(-n+27),
+        .cell:nth-child(n+46):nth-child(-n+54) {
+            border-bottom: 3px solid #1e293b;
+        }
+
+        h1 {
+            color: #1e293b;
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+
+        button {
+            margin-top: 30px;
+            padding: 14px 28px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: 0.2s;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        button:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Sudoku Pro</h1>
+    <div class="grid" id="grid"></div>
+    <button onclick="check()">Check Solution</button>
+    <script>
+        // Valid sudoku board
+        const board = [
+            [5, 3, 4, 6, 7, 8, 9, 1, 2],
+            [6, 7, 2, 1, 9, 5, 3, 4, 8],
+            [1, 9, 8, 3, 4, 2, 5, 6, 7],
+            [8, 5, 9, 7, 6, 1, 4, 2, 3],
+            [4, 2, 6, 8, 5, 3, 7, 9, 1],
+            [7, 1, 3, 9, 2, 4, 8, 5, 6],
+            [9, 6, 1, 5, 3, 7, 2, 8, 4],
+            [2, 8, 7, 4, 1, 9, 6, 3, 5],
+            [3, 4, 5, 2, 8, 6, 1, 7, 9]
+        ];
+
+        // Mask some elements (true means hide - adjust hiddenCount to change difficulty)
+        const mask = Array(9).fill().map(() => Array(9).fill(false));
+        let hiddenCount = 35;
+        while (hiddenCount > 0) {
+            let r = Math.floor(Math.random() * 9);
+            let c = Math.floor(Math.random() * 9);
+            if (!mask[r][c]) { mask[r][c] = true; hiddenCount--; }
+        }
+
+        const gridEl = document.getElementById('grid');
+        const inputs = [];
+
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                let cell = document.createElement('div');
+                cell.className = 'cell';
+                let inp = document.createElement('input');
+                inp.type = 'text';
+                inp.maxLength = 1;
+                if (!mask[r][c]) {
+                    inp.value = board[r][c];
+                    inp.readOnly = true;
+                } else {
+                    inp.dataset.r = r; inp.dataset.c = c;
+                }
+                inp.addEventListener('input', (e) => {
+                    if (!/^[1-9]$/.test(e.target.value)) e.target.value = '';
+                    e.target.style.backgroundColor = 'white'; // reset alert color on input
+                });
+                cell.appendChild(inp);
+                gridEl.appendChild(cell);
+                inputs.push({ inp, r, c });
+            }
+        }
+
+        window.check = function () {
+            let win = true;
+            let isComplete = true;
+
+            inputs.forEach(item => {
+                if (!item.inp.readOnly) {
+                    if (item.inp.value === "") {
+                        isComplete = false;
+                    } else if (parseInt(item.inp.value) !== board[item.r][item.c]) {
+                        win = false;
+                        item.inp.style.backgroundColor = '#fecdd3';
+                    } else {
+                        item.inp.style.backgroundColor = '#bbf7d0';
+                    }
+                }
+            });
+
+            if (!isComplete) {
+                alert("Keep going! Fill in the empty squares.");
+            } else if (win) {
+                alert("Congratulations! You solved it.");
+            } else {
+                alert("Not quite right. Red cells are incorrect. Keep trying!");
+            }
+        };
+    </script>
+</body>
+
+</html>
