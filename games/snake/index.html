@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Retro Snake</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #1a1a2e;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        canvas {
+            background: #0f3460;
+            box-shadow: 0 0 20px #e94560;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .info {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #fff;
+            text-shadow: 0 0 10px #e94560;
+        }
+
+        .controls {
+            margin-top: 15px;
+            color: #aaa;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        button {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="info">Score: <span id="score">0</span></div>
+    <canvas id="gameCanvas" width="400" height="400" tabindex="0"></canvas>
+    <div class="controls">
+        Use Arrow Keys or WASD to move.<br>
+        <button onclick="resetGame()">Restart Game</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+        canvas.focus();
+
+        const grid = 20;
+        let count = 0;
+        let score = 0;
+        let snake = { x: 160, y: 160, dx: grid, dy: 0, cells: [], maxCells: 4 };
+        let apple = { x: 320, y: 320 };
+
+        function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min)) + min; }
+        function resetGame() {
+            snake.x = 160; snake.y = 160; snake.cells = []; snake.maxCells = 4; snake.dx = grid; snake.dy = 0;
+            score = 0; scoreEl.innerText = score; placeApple();
+        }
+        function placeApple() {
+            apple.x = getRandomInt(0, 20) * grid;
+            apple.y = getRandomInt(0, 20) * grid;
+        }
+
+        function loop() {
+            requestAnimationFrame(loop);
+            if (++count < 4) return;
+            count = 0;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            snake.x += snake.dx;
+            snake.y += snake.dy;
+
+            // wrap edge
+            if (snake.x < 0) snake.x = canvas.width - grid;
+            else if (snake.x >= canvas.width) snake.x = 0;
+            if (snake.y < 0) snake.y = canvas.height - grid;
+            else if (snake.y >= canvas.height) snake.y = 0;
+
+            snake.cells.unshift({ x: snake.x, y: snake.y });
+            if (snake.cells.length > snake.maxCells) snake.cells.pop();
+
+            ctx.fillStyle = 'red';
+            ctx.shadowBlur = 10; ctx.shadowColor = 'red';
+            ctx.fillRect(apple.x, apple.y, grid - 1, grid - 1);
+
+            ctx.fillStyle = '#00ffff';
+            ctx.shadowColor = '#00ffff';
+            snake.cells.forEach(function (cell, index) {
+                ctx.fillRect(cell.x, cell.y, grid - 1, grid - 1);
+                if (cell.x === apple.x && cell.y === apple.y) {
+                    snake.maxCells++;
+                    score += 10; scoreEl.innerText = score;
+                    placeApple();
+                }
+                for (let i = index + 1; i < snake.cells.length; i++) {
+                    if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) resetGame();
+                }
+            });
+            ctx.shadowBlur = 0; // reset
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if ([37, 65].includes(e.which) && snake.dx === 0) { snake.dx = -grid; snake.dy = 0; }
+            else if ([38, 87].includes(e.which) && snake.dy === 0) { snake.dy = -grid; snake.dx = 0; }
+            else if ([39, 68].includes(e.which) && snake.dx === 0) { snake.dx = grid; snake.dy = 0; }
+            else if ([40, 83].includes(e.which) && snake.dy === 0) { snake.dy = grid; snake.dx = 0; }
+        });
+
+        placeApple();
+        requestAnimationFrame(loop);
+    </script>
+</body>
+
+</html>

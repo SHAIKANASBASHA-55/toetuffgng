@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Classic Chess</title>
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #1a1a2e;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        #myBoard {
+            width: 400px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #00ffff;
+            color: #000;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            box-shadow: 0 0 10px #00ffff;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #ff00ff;
+            color: #fff;
+            box-shadow: 0 0 15px #ff00ff;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        #status {
+            margin-top: 15px;
+            font-size: 18px;
+            color: #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h1 style="text-align: center;">Classic Chess</h1>
+        <div id="myBoard"></div>
+        <div class="controls">
+            <button id="startBtn">Restart Game</button>
+            <p id="status">White to move</p>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script>
+        var board = null;
+        var game = new Chess();
+        var $status = $('#status');
+
+        function onDragStart(source, piece, position, orientation) {
+            if (game.game_over()) return false;
+            if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+                (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+                return false;
+            }
+        }
+
+        function onDrop(source, target) {
+            var move = game.move({
+                from: source,
+                to: target,
+                promotion: 'q'
+            });
+            if (move === null) return 'snapback';
+            updateStatus();
+            window.setTimeout(makeRandomMove, 250);
+        }
+
+        function onSnapEnd() { board.position(game.fen()); }
+
+        function updateStatus() {
+            var statusHTML = '';
+            var moveColor = (game.turn() === 'w') ? 'White' : 'Black';
+            if (game.in_checkmate()) { statusHTML = 'Game over, ' + moveColor + ' is in checkmate.'; }
+            else if (game.in_draw()) { statusHTML = 'Game over, drawn position'; }
+            else {
+                statusHTML = moveColor + ' to move';
+                if (game.in_check()) { statusHTML += ', ' + moveColor + ' is in check'; }
+            }
+            $status.html(statusHTML);
+        }
+
+        function makeRandomMove() {
+            var possibleMoves = game.moves();
+            if (possibleMoves.length === 0) return;
+            var randomIdx = Math.floor(Math.random() * possibleMoves.length);
+            game.move(possibleMoves[randomIdx]);
+            board.position(game.fen());
+            updateStatus();
+        }
+
+        var config = {
+            draggable: true,
+            position: 'start',
+            onDragStart: onDragStart,
+            onDrop: onDrop,
+            onSnapEnd: onSnapEnd
+        };
+        board = Chessboard('myBoard', config);
+        updateStatus();
+
+        $('#startBtn').on('click', function () {
+            game.reset();
+            board.start();
+            updateStatus();
+        });
+    </script>
+</body>
+
+</html>

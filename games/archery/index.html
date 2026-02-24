@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Archery Master</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #1a1a2e;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+
+        canvas {
+            background: #162447;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 15px #00ffff;
+            border-radius: 8px;
+            cursor: crosshair;
+        }
+
+        .score-board {
+            position: absolute;
+            top: 20px;
+            font-size: 24px;
+            color: #00ffff;
+            font-weight: bold;
+            text-shadow: 0 0 5px #00ffff;
+        }
+
+        .instruction {
+            position: absolute;
+            bottom: 20px;
+            font-size: 16px;
+            color: #aaa;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="score-board">Score: <span id="score">0</span></div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div class="instruction">Click anywhere to shoot the arrow. Timing is key!</div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const scoreEl = document.getElementById("score");
+
+        let score = 0;
+        let target = { x: 700, y: 100, radius: 40, dy: 3 };
+        let arrow = { x: 50, y: 300, w: 60, h: 5, active: false, dx: 15 };
+        let bow = { x: 50, y: 300, radius: 40 };
+
+        function drawTarget() {
+            ctx.beginPath();
+            ctx.arc(target.x, target.y, target.radius, 0, Math.PI * 2);
+            ctx.fillStyle = "red";
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(target.x, target.y, target.radius * 0.6, 0, Math.PI * 2);
+            ctx.fillStyle = "white";
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(target.x, target.y, target.radius * 0.2, 0, Math.PI * 2);
+            ctx.fillStyle = "red";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawBow() {
+            ctx.beginPath();
+            ctx.arc(bow.x, bow.y, bow.radius, -Math.PI / 2, Math.PI / 2);
+            ctx.strokeStyle = "#00ffff";
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            // Bow string
+            ctx.beginPath();
+            ctx.moveTo(bow.x, bow.y - bow.radius);
+            ctx.lineTo(bow.x, bow.y + bow.radius);
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+
+        function drawArrow() {
+            if (!arrow.active) return;
+            ctx.fillStyle = "#ff00ff";
+            ctx.fillRect(arrow.x, arrow.y - arrow.h / 2, arrow.w, arrow.h);
+            ctx.beginPath();
+            ctx.moveTo(arrow.x + arrow.w, arrow.y - arrow.h);
+            ctx.lineTo(arrow.x + arrow.w + 10, arrow.y);
+            ctx.lineTo(arrow.x + arrow.w, arrow.y + arrow.h);
+            ctx.fillStyle = "yellow";
+            ctx.fill();
+        }
+
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            target.y += target.dy;
+            if (target.y + target.radius > canvas.height || target.y - target.radius < 0) {
+                target.dy *= -1;
+            }
+
+            drawBow();
+            drawTarget();
+            drawArrow();
+
+            if (arrow.active) {
+                arrow.x += arrow.dx;
+
+                // Collision detection
+                let dist = Math.hypot(arrow.x + arrow.w - target.x, arrow.y - target.y);
+                if (dist < target.radius) {
+                    score += 10;
+                    scoreEl.innerText = score;
+                    arrow.active = false;
+                    target.dy += (target.dy > 0 ? 0.5 : -0.5); // speed up
+                } else if (arrow.x > canvas.width) {
+                    arrow.active = false;
+                    score -= 5;
+                    scoreEl.innerText = score;
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        canvas.addEventListener("click", () => {
+            if (!arrow.active) {
+                arrow.active = true;
+                arrow.x = bow.x;
+                arrow.y = bow.y;
+            }
+        });
+
+        canvas.addEventListener("mousemove", (e) => {
+            if (!arrow.active) {
+                let rect = canvas.getBoundingClientRect();
+                bow.y = e.clientY - rect.top;
+            }
+        });
+
+        update();
+    </script>
+</body>
+
+</html>

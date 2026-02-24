@@ -1,38 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Play Game - toetuffgng'hub'</title>
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/game.css"> <!-- this will be new -->
-    <link rel="icon" href="favicon.ico">
-    <!-- Vercel Web Analytics -->
-    <script>
-      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    </script>
-    <script defer src="/_vercel/insights/script.js"></script>
-    <!-- Vercel Speed Insights -->
-    <script>
-      window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-    </script>
-    <script defer src="/_vercel/speed-insights/script.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Play Game - toetuffgng'hub'</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/game.css"> <!-- this will be new -->
+  <link rel="icon" href="favicon.ico">
+
 </head>
+
 <body>
-    <header class="navbar">
-        <a href="index.html">Back to Home</a>
-        <h1 id="gameTitle">Game Title</h1>
-        <button id="fullscreenBtn" class="fs-btn">
-  <img src="https://www.svgrepo.com/show/434888/fullscreen.svg" alt="Fullscreen">
-  <span>Fullscreen</span>
-</button>
-    </header>
+  <header class="navbar">
+    <a href="index.html">Back to Home</a>
+    <h1 id="gameTitle">Game Title</h1>
+    <button id="fullscreenBtn" class="fs-btn">
+      <img src="https://www.svgrepo.com/show/434888/fullscreen.svg" alt="Fullscreen">
+      <span>Fullscreen</span>
+    </button>
+  </header>
 
-    <main class="game-container">
-        <iframe id="gameIframe" src="" frameborder="0" allowfullscreen></iframe>
-    </main>
+  <main class="game-container">
+    <iframe id="gameIframe" src="" frameborder="0" allowfullscreen></iframe>
+  </main>
 
-    <script type="module" src="js/pages/game.js"></script>
+  <script type="module" src="js/pages/game.js"></script>
 </body>
+
 </html>

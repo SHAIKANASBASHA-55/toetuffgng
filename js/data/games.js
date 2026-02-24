@@ -1,37 +1,37 @@
 export const games = [
     {
-        id: 'racer',
-        title: 'Racer Master',
-        thumbnail: 'https://thumbs.dreamstime.com/b/futuristic-race-car-speeds-neon-lit-tunnel-vibrant-smoke-trailing-cyberpunk-setting-sleek-high-tech-accelerates-371536000.jpg',
-        url: 'https://racer-master.vercel.app/',
-        category: 'racing'
+        id: 'chess',
+        title: 'Classic Chess',
+        thumbnail: 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&q=80&w=600',
+        url: 'games/chess/index.html',
+        category: 'board'
     },
     {
-        id: 'hextris',
-        title: 'Hextris',
-        thumbnail: 'https://www.classicgame.com/uploaded/game/screenshot/hextris.webp',
-        url: 'https://hextris-one.vercel.app/',
-        category: 'puzzle'
+        id: 'carrom',
+        title: 'Carrom Clash',
+        thumbnail: 'https://images.unsplash.com/photo-1628198759368-ffae2b2ac1c9?auto=format&fit=crop&q=80&w=600',
+        url: 'games/carrom/index.html',
+        category: 'board'
     },
     {
-        id: 'clumsy-bird',
-        title: 'Clumsy Bird',
-        thumbnail: 'https://upload.wikimedia.org/wikipedia/en/0/0a/Flappy_Bird_icon.png',
-        url: 'https://clumsy-bird-master-zeta.vercel.app/',
+        id: 'archery',
+        title: 'Archery Master',
+        thumbnail: 'https://images.unsplash.com/photo-1511204663731-318e9a1aa01a?auto=format&fit=crop&q=80&w=600',
+        url: 'games/archery/index.html',
         category: 'arcade'
     },
     {
-        id: '2048',
-        title: '2048',
-        thumbnail: 'https://play-lh.googleusercontent.com/V04D0W3wYq4crdfMkWnIm-FEqTHzQllOKaKyEElCEvGqzDJDt1T7leyVq7O-g6i9Gz8=w526-h296-rw',
-        url: 'https://2048-master-five.vercel.app/',
-        category: 'puzzle'
+        id: 'snake',
+        title: 'Retro Snake',
+        thumbnail: 'https://images.unsplash.com/photo-1526402967156-f80e9a1ff0df?auto=format&fit=crop&q=80&w=600',
+        url: 'games/snake/index.html',
+        category: 'arcade'
     },
     {
-        id: 'Flappy-Neo',
-        title: 'Flappy Neo',
-        thumbnail: 'https://upload.wikimedia.org/wikipedia/en/0/0a/Flappy_Bird_icon.png',
-        url: 'https://flappyneo.vercel.app/',
-        category: 'arcade'
+        id: 'tetris',
+        title: 'Block Puzzle',
+        thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=600',
+        url: 'games/tetris/index.html',
+        category: 'puzzle'
     }
 ];

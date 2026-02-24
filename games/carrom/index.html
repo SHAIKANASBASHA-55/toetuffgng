@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Carrom Clash</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #1a1a2e;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        canvas {
+            background: #d7b578;
+            border: 15px solid #5a3825;
+            border-radius: 10px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5), 0 0 15px #e94560;
+            cursor: crosshair;
+        }
+
+        .controls {
+            margin-top: 15px;
+            color: #aaa;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            color: #e94560;
+            text-shadow: 0 0 5px #e94560;
+        }
+
+        button {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            box-shadow: 0 0 10px #e94560;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Carrom Clash</h1>
+    <canvas id="carromCanvas" width="500" height="500"></canvas>
+    <div class="controls">
+        Drag from the white striker to shoot. Push pieces into pockets.<br>
+        <button onclick="init()">Restart Game</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("carromCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let pucks = [];
+        let dragging = false;
+        let pStart = { x: 0, y: 0 };
+        let pEnd = { x: 0, y: 0 };
+
+        const pockets = [
+            { x: 20, y: 20, r: 25 },
+            { x: 480, y: 20, r: 25 },
+            { x: 20, y: 480, r: 25 },
+            { x: 480, y: 480, r: 25 }
+        ];
+
+        class Puck {
+            constructor(x, y, radius, color, isStriker) {
+                this.x = x; this.y = y; this.radius = radius;
+                this.color = color; this.isStriker = isStriker;
+                this.dx = 0; this.dy = 0; this.mass = isStriker ? 1.5 : 1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#000';
+                ctx.stroke();
+
+                if (this.color === '#fff') { // draw center dot for striker
+                    ctx.beginPath(); ctx.arc(this.x, this.y, this.radius * 0.4, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ccc'; ctx.fill();
+                } else if (this.color === '#000') {
+                    ctx.beginPath(); ctx.arc(this.x, this.y, this.radius * 0.3, 0, Math.PI * 2);
+                    ctx.fillStyle = '#333'; ctx.fill();
+                }
+            }
+            update() {
+                this.x += this.dx;
+                this.y += this.dy;
+                // friction
+                this.dx *= 0.98;
+                this.dy *= 0.98;
+                if (Math.abs(this.dx) < 0.1) this.dx = 0;
+                if (Math.abs(this.dy) < 0.1) this.dy = 0;
+
+                // Wall bounce
+                if (this.x - this.radius < 0) { this.x = this.radius; this.dx *= -1; }
+                if (this.x + this.radius > canvas.width) { this.x = canvas.width - this.radius; this.dx *= -1; }
+                if (this.y - this.radius < 0) { this.y = this.radius; this.dy *= -1; }
+                if (this.y + this.radius > canvas.height) { this.y = canvas.height - this.radius; this.dy *= -1; }
+            }
+        }
+
+        function init() {
+            pucks = [];
+            // center pieces
+            pucks.push(new Puck(250, 250, 15, 'red', false));
+            for (let i = 0; i < 6; i++) {
+                let angle = i * Math.PI / 3;
+                pucks.push(new Puck(250 + 32 * Math.cos(angle), 250 + 32 * Math.sin(angle), 15, i % 2 === 0 ? '#fff' : '#000', false));
+            }
+            // striker
+            pucks.push(new Puck(250, 420, 20, '#fff', true));
+        }
+
+        function handleCollisions() {
+            for (let i = 0; i < pucks.length; i++) {
+                for (let j = i + 1; j < pucks.length; j++) {
+                    let p1 = pucks[i];
+                    let p2 = pucks[j];
+                    let dx = p2.x - p1.x;
+                    let dy = p2.y - p1.y;
+                    let dist = Math.hypot(dx, dy);
+
+                    if (dist < p1.radius + p2.radius) {
+                        // resolve overlap
+                        let overlap = (p1.radius + p2.radius) - dist;
+                        let nx = dx / dist; let ny = dy / dist;
+                        p1.x -= nx * overlap / 2; p1.y -= ny * overlap / 2;
+                        p2.x += nx * overlap / 2; p2.y += ny * overlap / 2;
+
+                        // velocity
+                        let kx = p1.dx - p2.dx; let ky = p1.dy - p2.dy;
+                        let p = 2 * (nx * kx + ny * ky) / (p1.mass + p2.mass);
+                        p1.dx -= p * p2.mass * nx; p1.dy -= p * p2.mass * ny;
+                        p2.dx += p * p1.mass * nx; p2.dy += p * p1.mass * ny;
+                    }
+                }
+            }
+        }
+
+        function loop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // draw pockets
+            pockets.forEach(p => {
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = '#222'; ctx.fill();
+            });
+            // center deco
+            ctx.beginPath(); ctx.arc(250, 250, 50, 0, Math.PI * 2);
+            ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.stroke();
+
+            pucks.forEach((p, idx) => {
+                p.update();
+                p.draw();
+                // Check pockets
+                for (let pock of pockets) {
+                    if (Math.hypot(p.x - pock.x, p.y - pock.y) < pock.r) {
+                        if (p.isStriker) {
+                            p.x = 250; p.y = 420; p.dx = 0; p.dy = 0; // reset striker
+                        } else {
+                            pucks.splice(idx, 1);
+                        }
+                    }
+                }
+            });
+
+            handleCollisions();
+
+            if (dragging) {
+                let striker = pucks.find(p => p.isStriker);
+                if (striker) {
+                    ctx.beginPath();
+                    ctx.moveTo(striker.x, striker.y);
+                    ctx.lineTo(striker.x + (striker.x - pEnd.x), striker.y + (striker.y - pEnd.y));
+                    ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+                    ctx.lineWidth = 3;
+                    ctx.setLineDash([5, 5]);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+            requestAnimationFrame(loop);
+        }
+
+        canvas.addEventListener('mousedown', e => {
+            let rect = canvas.getBoundingClientRect();
+            let mouseX = e.clientX - rect.left;
+            let mouseY = e.clientY - rect.top;
+            let striker = pucks.find(p => p.isStriker);
+            if (striker && Math.hypot(mouseX - striker.x, mouseY - striker.y) < striker.radius) {
+                dragging = true; pStart = { x: mouseX, y: mouseY };
+            }
+        });
+        canvas.addEventListener('mousemove', e => {
+            if (dragging) {
+                let rect = canvas.getBoundingClientRect();
+                pEnd = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+            }
+        });
+        window.addEventListener('mouseup', () => {
+            if (dragging) {
+                let striker = pucks.find(p => p.isStriker);
+                if (striker) {
+                    let forceX = (striker.x - pEnd.x) * 0.15;
+                    let forceY = (striker.y - pEnd.y) * 0.15;
+                    striker.dx = Math.max(Math.min(forceX, 20), -20);
+                    striker.dy = Math.max(Math.min(forceY, 20), -20);
+                }
+                dragging = false;
+            }
+        });
+
+        init();
+        loop();
+    </script>
+</body>
+
+</html>
